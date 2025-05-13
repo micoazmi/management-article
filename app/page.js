@@ -2,62 +2,27 @@
 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Api from '@/lib/api'
 
-const dummyArticles = [
-  {
-    id: "1",
-    title: "Cybersecurity Essentials Every Developer Should Know",
-    content: "Learn about basic security concepts every developer should know.",
-    userId: "user-1",
-    categoryId: "cat-1",
-    createdAt: "2025-05-13T06:45:06.381Z",
-    updatedAt: "2025-05-13T06:45:06.381Z",
-    category: {
-      id: "cat-1",
-      name: "Security",
-      userId: "user-1",
-      createdAt: "2025-05-13T06:45:06.381Z",
-      updatedAt: "2025-05-13T06:45:06.381Z"
-    },
-    user: {
-      id: "user-1",
-      username: "JohnDoe",
-      role: "User"
-    },
-    image: "/images/article1.jpg"
-  },
-  {
-    id: "2",
-    title: "The Future of Work: Remote-First Teams and Tools",
-    content: "Explore how remote-first culture is shaping modern organizations.",
-    userId: "user-2",
-    categoryId: "cat-2",
-    createdAt: "2025-05-13T06:45:06.381Z",
-    updatedAt: "2025-05-13T06:45:06.381Z",
-    category: {
-      id: "cat-2",
-      name: "Remote Work",
-      userId: "user-2",
-      createdAt: "2025-05-13T06:45:06.381Z",
-      updatedAt: "2025-05-13T06:45:06.381Z"
-    },
-    user: {
-      id: "user-2",
-      username: "JaneSmith",
-      role: "Admin"
-    },
-    image: "/images/article2.jpg"
-  }
-];
 
 
-export default async function HomePage() {
+export default  function HomePage() {
+
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
-  const res = await Api.get('/articles')
-  const articles = res.data.data || [];
+    const [articles, setArticles] = useState([]);
+    useEffect(() => {
+    async function fetchArticles() {
+      try {
+        const res = await Api.get('/articles');
+        setArticles(res.data.data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchArticles();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -1,102 +1,147 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { useState } from 'react';
+import Api from '@/lib/api'
+
+const dummyArticles = [
+  {
+    id: "1",
+    title: "Cybersecurity Essentials Every Developer Should Know",
+    content: "Learn about basic security concepts every developer should know.",
+    userId: "user-1",
+    categoryId: "cat-1",
+    createdAt: "2025-05-13T06:45:06.381Z",
+    updatedAt: "2025-05-13T06:45:06.381Z",
+    category: {
+      id: "cat-1",
+      name: "Security",
+      userId: "user-1",
+      createdAt: "2025-05-13T06:45:06.381Z",
+      updatedAt: "2025-05-13T06:45:06.381Z"
+    },
+    user: {
+      id: "user-1",
+      username: "JohnDoe",
+      role: "User"
+    },
+    image: "/images/article1.jpg"
+  },
+  {
+    id: "2",
+    title: "The Future of Work: Remote-First Teams and Tools",
+    content: "Explore how remote-first culture is shaping modern organizations.",
+    userId: "user-2",
+    categoryId: "cat-2",
+    createdAt: "2025-05-13T06:45:06.381Z",
+    updatedAt: "2025-05-13T06:45:06.381Z",
+    category: {
+      id: "cat-2",
+      name: "Remote Work",
+      userId: "user-2",
+      createdAt: "2025-05-13T06:45:06.381Z",
+      updatedAt: "2025-05-13T06:45:06.381Z"
+    },
+    user: {
+      id: "user-2",
+      username: "JaneSmith",
+      role: "Admin"
+    },
+    image: "/images/article2.jpg"
+  }
+];
+
+
+export default async function HomePage() {
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState('');
+  const res = await Api.get('/articles')
+  const articles = res.data.data || [];
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-gray-50">
+      {/* Navbar */}
+      <header className="bg-white border-b shadow-sm py-4 px-6 flex justify-between items-center">
+        <div className="font-bold text-blue-600 text-lg">Logoipsum</div>
+        <div className="flex items-center gap-2">
+          <span className="font-medium text-sm">John Doe</span>
+          <img src="/avatar.png" alt="avatar" className="w-8 h-8 rounded-full" />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+      </header>
+
+      {/* Hero */}
+      <section className="bg-white text-center py-12 px-4">
+        <h1 className="text-3xl font-bold text-gray-800">
+          The Journal : Design Resources, Interviews, and Industry News
+        </h1>
+        <p className="mt-2 text-gray-600">Your daily dose of design insights!</p>
+
+        {/* Filters */}
+        <div className="mt-6 flex justify-center gap-3 flex-wrap">
+          <select
+            className="border px-4 py-2 rounded w-48"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            <option value="">Select Category</option>
+            <option value="design">Design</option>
+            <option value="security">Security</option>
+          </select>
+
+          <Input
+            placeholder="Search articles..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-64"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+        </div>
+      </section>
+
+      {/* Article Grid */}
+      <section className="px-4 max-w-6xl mx-auto py-8">
+        <p className="mb-6 text-sm text-gray-500">
+          Showing {articles.length} of {articles.length} articles
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {articles.map((article) => (
+            <div key={article.id} className="bg-white rounded shadow overflow-hidden">
+              <img src={article.image} alt={article.title} className="h-48 w-full object-cover" />
+              <div className="p-4">
+                <p className="text-sm text-gray-500">
+                  {new Date(article.createdAt).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </p>
+                <h2 className="text-lg font-semibold mt-1">{article.title}</h2>
+                <p className="text-sm text-gray-600 mt-2 line-clamp-2">{article.content}</p>
+                <div className="mt-3 flex gap-2 flex-wrap">
+                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                    {article.category.name}
+                  </span>
+                  <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
+                    {article.user.username}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Pagination */}
+        <div className="mt-8 flex justify-center gap-2 text-sm">
+          <Button variant="outline">Previous</Button>
+          <Button variant="default">1</Button>
+          <Button variant="outline">2</Button>
+          <Button variant="outline">Next</Button>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-white text-center py-6 text-sm text-gray-500 mt-10 border-t">
+        © 2025 Blog project. All rights reserved.
       </footer>
     </div>
   );

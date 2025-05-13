@@ -71,7 +71,7 @@ export default  function HomePage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {articles.map((article) => (
             <div key={article.id} className="bg-white rounded shadow overflow-hidden">
-              <img src={article.image} alt={article.title} className="h-48 w-full object-cover" />
+              <img src={article.imageUrl} alt={article.title} className="h-48 w-full object-cover" />
               <div className="p-4">
                 <p className="text-sm text-gray-500">
                   {new Date(article.createdAt).toLocaleDateString('en-US', {

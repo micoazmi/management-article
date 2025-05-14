@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import Api from "@/lib/api";
 import Footer from "./footer/footer";
-
+import Image from "next/image";
 
 
 export default function HomePage() {
@@ -45,13 +45,9 @@ export default function HomePage() {
 
         {/* Navbar */}
         <div className="relative z-20 flex justify-between items-center px-6 py-4">
-          <img src="/Logo.png" alt="Logo" />
+          <Image src="/Logo.png" width={150} height={100}></Image>
           <div className="flex items-center gap-2">
-            <img
-              src="/avatar.png"
-              alt="avatar"
-              className="w-8 h-8 rounded-full"
-            />
+
             <span className="font-medium text-sm text-white">John Doe</span>
           </div>
         </div>

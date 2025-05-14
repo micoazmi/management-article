@@ -15,6 +15,8 @@ export default function HomePage() {
   const [category, setCategory] = useState("");
   const [articles, setArticles] = useState([]);
   const [user, setUser] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const articlesPerPage = 9;
 
   useEffect(() => {
     async function fetchArticles() {
@@ -40,7 +42,7 @@ export default function HomePage() {
 
         if (!res.ok) throw new Error("Unauthorized");
         const data = await res.json();
-        console.log(data)
+        console.log(data);
         setUser(data);
       } catch (err) {
         console.error("Failed to fetch user:", err);
@@ -50,6 +52,28 @@ export default function HomePage() {
     fetchArticles();
     fetchUser();
   }, []);
+
+  const filteredArticles = articles.filter((article) => {
+    const titleMatch = article.title
+      .toLowerCase()
+      .includes(search.toLowerCase());
+    const categoryMatch = category === "" || article.category.name === category;
+    return titleMatch && categoryMatch;
+  });
+
+  const indexOfLastArticle = currentPage * articlesPerPage;
+  const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
+  const currentArticles = filteredArticles.slice(
+    indexOfFirstArticle,
+    indexOfLastArticle
+  );
+  const totalPages = Math.ceil(filteredArticles.length / articlesPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -65,7 +89,7 @@ export default function HomePage() {
 
         {/* Navbar */}
         <div className="relative z-20 flex justify-between items-center px-6 py-4">
-          <img src="/Logo.png" ></img>
+          <img src="/Logo.png"></img>
           <div className="flex items-center gap-2">
             {user ? (
               <Menu as="div" className="relative inline-block text-left">
@@ -147,9 +171,10 @@ export default function HomePage() {
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                 >
-                  <option value="">Select Category</option>
-                  <option value="design">Design</option>
-                  <option value="security">Security</option>
+                  <option value="">All Categories</option>
+                  <option value="Management">Management</option>
+                  <option value="Technology">Technology</option>
+                  <option value="Finance">Finance</option>
                 </select>
 
                 {/* Search Input with Lucide Icon */}
@@ -171,10 +196,10 @@ export default function HomePage() {
       {/* Article Grid */}
       <section className="px-9 max-w-7xl mx-auto py-8 ">
         <p className="mb-6 text-sm text-gray-500">
-          Showing {articles.length} of {articles.length} articles
+          Showing {filteredArticles.length} of {articles.length} articles
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {articles.map((article) => (
+          {currentArticles.map((article) => (
             <div
               key={article.id}
               className="bg-white rounded shadow overflow-hidden"
@@ -210,11 +235,32 @@ export default function HomePage() {
         </div>
 
         {/* Pagination */}
-        <div className="mt-8 flex justify-center gap-2 text-sm ">
-          <Button variant="outline">Previous</Button>
-          <Button variant="default">1</Button>
-          <Button variant="outline">2</Button>
-          <Button variant="outline">Next</Button>
+        <div className="mt-8 flex justify-center gap-2 text-sm">
+          <Button
+            variant="outline"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </Button>
+
+          {[...Array(totalPages)].map((_, index) => (
+            <Button
+              key={index}
+              variant={currentPage === index + 1 ? "default" : "outline"}
+              onClick={() => handlePageChange(index + 1)}
+            >
+              {index + 1}
+            </Button>
+          ))}
+
+          <Button
+            variant="outline"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </Button>
         </div>
       </section>
 

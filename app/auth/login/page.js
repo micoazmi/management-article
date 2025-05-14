@@ -33,7 +33,7 @@ export default function LoginPage() {
       const res = await api.post("/auth/login", formData);
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", res.data.role);
-
+      router.push('/');
     } catch (error) {
       console.error(error);
       alert("Login failed.");

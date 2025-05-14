@@ -7,28 +7,48 @@ import { useEffect, useState } from "react";
 import Api from "@/lib/api";
 import Footer from "./footer/footer";
 import Image from "next/image";
-
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
 export default function HomePage() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [articles, setArticles] = useState([]);
   const [user, setUser] = useState(null);
+
   useEffect(() => {
     async function fetchArticles() {
       try {
         const res = await Api.get("/articles");
         setArticles(res.data.data);
-        const loggedInUser = {
-          name: "John Doe",
-          avatar: "/avatar.png",
-        };
-        setUser(loggedInUser);
       } catch (err) {
         console.error(err);
       }
     }
+
+    async function fetchUser() {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(
+          "https://test-fe.mysellerpintar.com/api/auth/profile",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!res.ok) throw new Error("Unauthorized");
+        const data = await res.json();
+        console.log(data)
+        setUser(data);
+      } catch (err) {
+        console.error("Failed to fetch user:", err);
+        setUser(null);
+      }
+    }
     fetchArticles();
+    fetchUser();
   }, []);
 
   return (
@@ -45,10 +65,66 @@ export default function HomePage() {
 
         {/* Navbar */}
         <div className="relative z-20 flex justify-between items-center px-6 py-4">
-          <Image src="/Logo.png" width={150} height={100}></Image>
+          <img src="/Logo.png" ></img>
           <div className="flex items-center gap-2">
+            {user ? (
+              <Menu as="div" className="relative inline-block text-left">
+                <MenuButton className="flex items-center gap-2 text-white px-3 py-2 rounded hover:bg-white/10 cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/50">
+                  <img
+                    src="/avatar.png"
+                    alt="avatar"
+                    width={32}
+                    height={32}
+                    className="rounded-full"
+                  />
+                  <span className="font-medium text-sm">{user.username}</span>
+                  <ChevronDownIcon className="w-4 h-4 text-white" />
+                </MenuButton>
 
-            <span className="font-medium text-sm text-white">John Doe</span>
+                <MenuItems className="absolute right-0 mt-2 w-40 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black/5 focus:outline-none z-50">
+                  <div className="py-1">
+                    <MenuItem>
+                      {({ active }) => (
+                        <a
+                          href="#"
+                          className={`block px-4 py-2 text-sm ${
+                            active
+                              ? "bg-gray-100 text-gray-900"
+                              : "text-gray-700"
+                          }`}
+                        >
+                          My Account
+                        </a>
+                      )}
+                    </MenuItem>
+                    <MenuItem>
+                      {({ active }) => (
+                        <button
+                          onClick={() => {
+                            localStorage.removeItem("auth");
+                            setUser(null);
+                          }}
+                          className={`w-full text-left block px-4 py-2 text-sm ${
+                            active
+                              ? "bg-gray-100 text-gray-900"
+                              : "text-gray-700"
+                          }`}
+                        >
+                          Logout
+                        </button>
+                      )}
+                    </MenuItem>
+                  </div>
+                </MenuItems>
+              </Menu>
+            ) : (
+              <a
+                href="/auth/login"
+                className="bg-white text-blue-600 font-semibold px-4 py-2 rounded hover:bg-blue-100 text-sm"
+              >
+                Login
+              </a>
+            )}
           </div>
         </div>
 

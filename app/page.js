@@ -128,7 +128,7 @@ export default function HomePage() {
                   <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
                     {article.category.name}
                   </span>
-                  <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
+                  <span className="text-xs bg-gray-100 text-blue-800 px-2 py-1 rounded-full">
                     {article.user.username}
                   </span>
                 </div>

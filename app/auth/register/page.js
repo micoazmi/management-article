@@ -13,7 +13,7 @@ import Link from 'next/link';
 const formSchema = z.object({
   username: z.string().min(1, 'Username is required'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
-  role: z.enum(['USER', 'ADMIN'], { errorMap: () => ({ message: 'Please select a role' }) }),
+  role: z.enum(['User', 'Admin'], { errorMap: () => ({ message: 'Please select a role' }) }),
 });
 
 export default function RegisterPage() {
@@ -31,7 +31,7 @@ export default function RegisterPage() {
   const onSubmit = async (formData) => {
     setLoading(true);
     try {
-      await api.post('/register', formData);
+      await api.post('/auth/register', formData);
       alert('Registration successful!');
       router.push('/auth/login');
     } catch (error) {
@@ -46,8 +46,8 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
       <div className="w-full max-w-sm p-8 bg-white rounded-lg shadow">
 
-        <div className="flex justify-center mb-6">
-          <img src="/logoipsum.svg" alt="Logo" className="h-8" />
+        <div className="flex justify-center mb-6 ">
+          <img src="/Frame.png" alt="Logo" className="h-8" />
         </div>
 
 
@@ -75,14 +75,14 @@ export default function RegisterPage() {
               defaultValue=""
             >
               <option value="" disabled>Select Role</option>
-              <option value="USER">User</option>
-              <option value="ADMIN">Admin</option>
+              <option value="User">User</option>
+              <option value="Admin">Admin</option>
             </select>
             {errors.role && <p className="text-sm text-red-500">{errors.role.message}</p>}
           </div>
 
   
-          <Button type="submit" disabled={loading} className="w-full">
+          <Button type="submit" disabled={loading} className="w-full bg-blue-600" >
             {loading ? 'Registering...' : 'Register'}
           </Button>
         </form>

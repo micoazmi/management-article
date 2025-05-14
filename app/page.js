@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import Api from "@/lib/api";
 import Footer from "./footer/footer";
-import Image from "next/image";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { LogOut } from "lucide-react";
 
 export default function HomePage() {
   const [search, setSearch] = useState("");
@@ -17,6 +17,7 @@ export default function HomePage() {
   const [user, setUser] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const articlesPerPage = 9;
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   useEffect(() => {
     async function fetchArticles() {
@@ -124,20 +125,48 @@ export default function HomePage() {
                     <MenuItem>
                       {({ active }) => (
                         <button
-                          onClick={() => {
-                            localStorage.removeItem("auth");
-                            setUser(null);
-                          }}
+                          onClick={() => setShowLogoutModal(true)}
                           className={`w-full text-left block px-4 py-2 text-sm ${
                             active
                               ? "bg-gray-100 text-gray-900"
                               : "text-gray-700"
                           }`}
                         >
-                          Logout
+                          <div className="flex items-center gap-2 text-red-600">
+                         <LogOut className="w-4 h-4 text-red-600" />
+                            Logout
+                          </div>
                         </button>
                       )}
                     </MenuItem>
+                    {showLogoutModal && (
+                      <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
+                        <div className="bg-white rounded-lg shadow-lg w-full max-w-sm p-6">
+                          <h2 className="text-lg font-semibold mb-2">Logout</h2>
+                          <p className="text-sm text-gray-600 mb-4">
+                            Are you sure you want to logout?
+                          </p>
+                          <div className="flex justify-end gap-2">
+                            <button
+                              onClick={() => setShowLogoutModal(false)}
+                              className="px-4 py-2 text-sm rounded bg-gray-100 hover:bg-gray-200"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              onClick={() => {
+                                localStorage.removeItem("auth");
+                                setUser(null);
+                                setShowLogoutModal(false);
+                              }}
+                              className="px-4 py-2 text-sm rounded bg-blue-600 text-white hover:bg-blue-700"
+                            >
+                              Logout
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </MenuItems>
               </Menu>
@@ -153,8 +182,8 @@ export default function HomePage() {
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-20 flex flex-col items-center justify-center text-center h-full px-4 mt-[-48px]">
-          <text> Blog genzet</text>
+        <div className="relative z-10 flex flex-col items-center justify-center text-center h-full px-4 mt-[-48px]">
+          <h2> Blog genzet</h2>
           <h1 className="text-3xl font-bold text-white max-w-2xl">
             The Journal : Design Resources, <br></br> Interviews, and Industry
             News

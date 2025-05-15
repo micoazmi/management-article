@@ -6,10 +6,8 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import Api from "@/lib/api";
 import Footer from "./footer/footer";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import { LogOut } from "lucide-react";
-
+import Navbar from "./navbar/navbar";
+import api from "@/lib/api";
 export default function HomePage() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
@@ -32,24 +30,22 @@ export default function HomePage() {
     async function fetchUser() {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(
-          "https://test-fe.mysellerpintar.com/api/auth/profile",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        if (!token) throw new Error("Token not found");
+        const res = await api.get("/auth/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-        if (!res.ok) throw new Error("Unauthorized");
-        const data = await res.json();
+        const data = res.data;
         console.log(data);
-        setUser(data);
+        setUser( data);
       } catch (err) {
         console.error("Failed to fetch user:", err);
         setUser(null);
       }
     }
+
     fetchArticles();
     fetchUser();
   }, []);
@@ -89,97 +85,7 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-[#2563EBDB] z-10" />
 
         {/* Navbar */}
-        <div className="relative z-20 flex justify-between items-center px-6 py-4">
-          <img src="/Logo.png"></img>
-          <div className="flex items-center gap-2">
-            {user ? (
-              <Menu as="div" className="relative inline-block text-left">
-                <MenuButton className="flex items-center gap-2 text-white px-3 py-2 rounded hover:bg-white/10 cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/50">
-                  <img
-                    src="/avatar.png"
-                    alt="avatar"
-                    width={32}
-                    height={32}
-                    className="rounded-full"
-                  />
-                  <span className="font-medium text-sm">{user.username}</span>
-                  <ChevronDownIcon className="w-4 h-4 text-white" />
-                </MenuButton>
-
-                <MenuItems className="absolute right-0 mt-2 w-40 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black/5 focus:outline-none z-50">
-                  <div className="py-1">
-                    <MenuItem>
-                      {({ active }) => (
-                        <a
-                          href="#"
-                          className={`block px-4 py-2 text-sm ${
-                            active
-                              ? "bg-gray-100 text-gray-900"
-                              : "text-gray-700"
-                          }`}
-                        >
-                          My Account
-                        </a>
-                      )}
-                    </MenuItem>
-                    <MenuItem>
-                      {({ active }) => (
-                        <button
-                          onClick={() => setShowLogoutModal(true)}
-                          className={`w-full text-left block px-4 py-2 text-sm ${
-                            active
-                              ? "bg-gray-100 text-gray-900"
-                              : "text-gray-700"
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 text-red-600">
-                         <LogOut className="w-4 h-4 text-red-600" />
-                            Logout
-                          </div>
-                        </button>
-                      )}
-                    </MenuItem>
-                    {showLogoutModal && (
-                      <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
-                        <div className="bg-white rounded-lg shadow-lg w-full max-w-sm p-6">
-                          <h2 className="text-lg font-semibold mb-2">Logout</h2>
-                          <p className="text-sm text-gray-600 mb-4">
-                            Are you sure you want to logout?
-                          </p>
-                          <div className="flex justify-end gap-2">
-                            <button
-                              onClick={() => setShowLogoutModal(false)}
-                              className="px-4 py-2 text-sm rounded bg-gray-100 hover:bg-gray-200"
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              onClick={() => {
-                                localStorage.removeItem("auth");
-                                setUser(null);
-                                setShowLogoutModal(false);
-                              }}
-                              className="px-4 py-2 text-sm rounded bg-blue-600 text-white hover:bg-blue-700"
-                            >
-                              Logout
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </MenuItems>
-              </Menu>
-            ) : (
-              <a
-                href="/auth/login"
-                className="bg-white text-blue-600 font-semibold px-4 py-2 rounded hover:bg-blue-100 text-sm"
-              >
-                Login
-              </a>
-            )}
-          </div>
-        </div>
+        <Navbar user={user} setUser={setUser}></Navbar>
 
         {/* Hero Content */}
         <div className="relative z-10 flex flex-col items-center justify-center text-center h-full px-4 mt-[-48px]">

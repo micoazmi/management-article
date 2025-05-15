@@ -8,6 +8,8 @@ import Api from "@/lib/api";
 import Footer from "./footer/footer";
 import Navbar from "./navbar/navbar";
 import api from "@/lib/api";
+import Link from "next/link";
+
 export default function HomePage() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
@@ -15,7 +17,6 @@ export default function HomePage() {
   const [user, setUser] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const articlesPerPage = 9;
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   useEffect(() => {
     async function fetchArticles() {
@@ -85,7 +86,7 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-[#2563EBDB] z-10" />
 
         {/* Navbar */}
-        <Navbar user={user} setUser={setUser}></Navbar>
+        <Navbar user={user} setUser={setUser}/>
 
         {/* Hero Content */}
         <div className="relative z-10 flex flex-col items-center justify-center text-center h-full px-4 mt-[-48px]">
@@ -152,7 +153,9 @@ export default function HomePage() {
                     day: "numeric",
                   })}
                 </p>
+                  <Link href={`/articles/${article.id}`} >
                 <h2 className="text-lg font-semibold mt-1">{article.title}</h2>
+                  </Link>
                 <p className="text-sm text-gray-600 mt-2 line-clamp-2">
                   {article.content}
                 </p>
